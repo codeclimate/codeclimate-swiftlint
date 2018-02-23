@@ -1,0 +1,12 @@
+
+{
+  "name": "SwiftLint",
+  "description": "A tool to enforce Swift style and conventions.",
+  "maintainer": {
+    "name": "Cyril Lashkevich",
+    "email": "notorca@gmail.com"
+  },
+  "languages" : ["Swift"],
+  "version": "0.25.0",
+  "spec_version": "0.3.1"
+}
