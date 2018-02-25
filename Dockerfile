@@ -6,10 +6,11 @@ WORKDIR /usr/src/codeclimate-SwiftLint
 
 COPY Sources Sources/
 COPY Package.* ./
+
 #to speedup resolve of dependencies
-COPY .build/checkouts/ .build/checkouts/
-COPY .build/repositories/ .build/repositories/
-COPY .build/dependencies-state.json .build/dependencies-state.json
+#COPY .build/checkouts/ .build/checkouts/
+#COPY .build/repositories/ .build/repositories/
+#COPY .build/dependencies-state.json .build/dependencies-state.json
 
 RUN swift build -v -c release && \
     cp "$(swift build -c release --show-bin-path)/codeclimate-SwiftLint" /usr/local/bin
