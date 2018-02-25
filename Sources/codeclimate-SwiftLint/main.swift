@@ -4,8 +4,6 @@ import SwiftLintFramework
 import SourceKittenFramework
 #if os(Linux)
     import Glibc
-#else
-    import Darwin
 #endif
 
 struct CodeclimateOptions : Decodable {
@@ -126,6 +124,10 @@ private func violationToString(violation: StyleViolation) -> String {
     return toJSON(d)
 }
 
+if CommandLine.argc == 2 && CommandLine.arguments[1] == "--version" {
+    print(SwiftLintFramework.Version.current.value)
+    exit(0)
+}
 
 DispatchQueue.global().async {
     do {
