@@ -10,6 +10,10 @@ COPY Package.* ./
 RUN swift build -v -c release && \
     cp "$(swift build -c release --show-bin-path)/codeclimate-SwiftLint" /usr/local/bin
 
+RUN strip -s /usr/local/bin/codeclimate-SwiftLint && \
+    strip -s /usr/lib/swift/linux/*.so && \
+    strip -s /usr/lib/libsourcekitdInProc.so /usr/lib/x86_64-linux-gnu/libBlocksRuntime.so.0
+
 FROM ubuntu:16.04
 
 RUN apt-get -q update && \
