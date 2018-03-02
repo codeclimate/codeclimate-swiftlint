@@ -55,7 +55,7 @@ extension Configuration {
     func visitLintableFiles(codeclimateOptions: CodeclimateOptions, parallel: Bool = false,
                             visitorBlock: @escaping (Linter) -> Void) -> [File] {
         let files = getFiles(codeclimateOptions: codeclimateOptions).filter {
-            return $0.path?.isSwiftFile() ?? false
+            return $0.path?.hasSuffix(".swift") ?? false
         }
         if (files.isEmpty) {
             return []
