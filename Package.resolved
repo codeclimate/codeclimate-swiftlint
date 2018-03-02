@@ -77,9 +77,9 @@
         "package": "SwiftLint",
         "repositoryURL": "https://github.com/realm/SwiftLint.git",
         "state": {
-          "branch": "master",
-          "revision": "dddb0f6cdd0f486e41257406e9cdc2d07f8f131c",
-          "version": null
+          "branch": null,
+          "revision": "c875bed8135517288fd89c072c0a316b4cdedb74",
+          "version": "0.25.0"
         }
       },
       {
