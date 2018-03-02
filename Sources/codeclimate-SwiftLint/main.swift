@@ -10,31 +10,6 @@ struct CodeclimateOptions : Decodable {
     let include_paths: [String]
 }
 
-struct JSONCodeclimateReporter: Reporter {
-    static let identifier = "json_codeclimate"
-    static let isRealtime = true
-
-    var description: String {
-        return "Reports violations as a JSON objects separated by NUL"
-    }
-
-    static func generateReport(_ violations: [StyleViolation]) -> String {
-        return toJSON(violations.map(dictionary(for:)))
-    }
-
-    fileprivate static func dictionary(for violation: StyleViolation) -> [String: Any] {
-        return [
-            "file": violation.location.file ?? NSNull() as Any,
-            "line": violation.location.line ?? NSNull() as Any,
-            "character": violation.location.character ?? NSNull() as Any,
-            "severity": violation.severity.rawValue.capitalized,
-            "type": violation.ruleDescription.name,
-            "rule_id": violation.ruleDescription.identifier,
-            "reason": violation.reason
-        ]
-    }
-}
-
 extension Configuration {
     init(codeclimateOptions: CodeclimateOptions, rootPath: String) {
         self.init(rootPath: rootPath,
