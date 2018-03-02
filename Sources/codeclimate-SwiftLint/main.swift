@@ -118,7 +118,7 @@ private func violationToString(violation: StyleViolation) -> String {
     let d: [String: Any] = [
         "type": "issue",
         "check_name": violation.ruleDescription.name,
-        "description": violation.ruleDescription.description,
+        "description": violation.reason,
         "categories": [category],
         "location": location,
         "severity": severity,
