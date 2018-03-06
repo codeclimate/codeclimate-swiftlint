@@ -6,6 +6,8 @@ import SourceKittenFramework
     import Glibc
 #endif
 
+var debugMode = false
+
 struct CodeclimateOptions : Decodable {
     let include_paths: [String]
     let exclude_paths: [String]?
@@ -117,6 +119,7 @@ private func violationToString(violation: StyleViolation) -> String {
     return toJSON(d)
 }
 
+// Exit fast when just version is required
 if CommandLine.argc == 2 && CommandLine.arguments[1] == "--version" {
     print(SwiftLintFramework.Version.current.value)
     exit(0)
@@ -124,27 +127,40 @@ if CommandLine.argc == 2 && CommandLine.arguments[1] == "--version" {
 
 DispatchQueue.global().async {
     do {
-        let rootPath: String?
-        let configUrl: URL
-        if CommandLine.argc == 2 {
-            rootPath = CommandLine.arguments[1]
-            configUrl = URL(fileURLWithPath:rootPath!.bridge().appendingPathComponent("config.json"))
+        var rootPath: String? = nil
+        var configUrl = URL(fileURLWithPath:"/config.json")
+        var args = CommandLine.arguments[1...]
+
+        if let opt = args.first, opt == "--debug" {
+                debugMode = true
+                args = args.dropFirst()
         }
-        else {
-            rootPath = nil
-            configUrl = URL(fileURLWithPath:"/config.json")
+        if let opt = args.first {
+            rootPath = opt
+            configUrl = URL(fileURLWithPath:rootPath!.bridge().appendingPathComponent("config.json"))
         }
 
         let configFileData = try Data(contentsOf:configUrl)
         let codeclimateOptions = try JSONDecoder().decode(CodeclimateOptions.self, from: configFileData)
         let configuration = Configuration(codeclimateOptions: codeclimateOptions, rootPath: rootPath ?? "/code")
+        var violationsCount : Int32 = 0
         configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: false) { linter in
-            for v: StyleViolation in linter.styleViolations {
-                var jsonString = violationToString(violation: v)
-                jsonString.append("\n\0")
-                queuedPrint(jsonString)
+            if debugMode {
+                let violatonsCount = Int32(linter.styleViolations.count)
+                OSAtomicAdd32(violatonsCount, &violationsCount)
+                queuedPrint(XcodeReporter.generateReport(linter.styleViolations))
+            }
+            else {
+                for v: StyleViolation in linter.styleViolations {
+                    var jsonString = violationToString(violation: v)
+                    jsonString.append("\n\0")
+                    queuedPrint(jsonString)
+                }
             }
             linter.file.invalidateCache()
+        }
+        if debugMode {
+            queuedPrint("Done linting! Found \(violationsCount) violations")
         }
     }
     catch {
