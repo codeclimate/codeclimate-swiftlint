@@ -160,7 +160,7 @@ DispatchQueue.global().async {
             linter.file.invalidateCache()
         }
         if debugMode {
-            queuedPrint("Done linting! Found \(violationsCount) violations")
+            queuedPrintError("Done linting! Found \(violationsCount) violations")
         }
     }
     catch {
