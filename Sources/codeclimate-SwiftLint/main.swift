@@ -143,23 +143,26 @@ DispatchQueue.global().async {
         let configFileData = try Data(contentsOf:configUrl)
         let codeclimateOptions = try JSONDecoder().decode(CodeclimateOptions.self, from: configFileData)
         let configuration = Configuration(codeclimateOptions: codeclimateOptions, rootPath: rootPath ?? "/code")
-        var violationsCount : Int32 = 0
-        configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: false) { linter in
-            if debugMode {
-                let violatonsCount = Int32(linter.styleViolations.count)
-                OSAtomicAdd32(violatonsCount, &violationsCount)
-                queuedPrint(XcodeReporter.generateReport(linter.styleViolations))
-            }
-            else {
+        if !debugMode {
+            configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: false) { linter in
                 for v: StyleViolation in linter.styleViolations {
                     var jsonString = violationToString(violation: v)
                     jsonString.append("\n\0")
                     queuedPrint(jsonString)
                 }
+                linter.file.invalidateCache()
             }
-            linter.file.invalidateCache()
         }
-        if debugMode {
+        else {
+            var violationsCount = 0
+            let violationsCountLock = NSLock()
+            configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: false) { linter in
+                violationsCountLock.lock()
+                violationsCount += linter.styleViolations.count
+                violationsCountLock.unlock()
+                queuedPrint(XcodeReporter.generateReport(linter.styleViolations))
+                linter.file.invalidateCache()
+            }
             queuedPrintError("Done linting! Found \(violationsCount) violations")
         }
     }
