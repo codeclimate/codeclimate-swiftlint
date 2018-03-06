@@ -8,6 +8,19 @@ import SourceKittenFramework
 
 struct CodeclimateOptions : Decodable {
     let include_paths: [String]
+    let exclude_paths: [String]?
+}
+
+extension File : Equatable {
+    public static func == (lhs: File, rhs: File) -> Bool {
+        return lhs.path == rhs.path
+    }
+}
+
+extension File : Hashable {
+    public var hashValue: Int {
+        return self.path?.hashValue ?? 0
+    }
 }
 
 extension Configuration {
@@ -16,26 +29,30 @@ extension Configuration {
                   optional: true, quiet: true, cachePath: nil)
     }
 
-    fileprivate func getFiles(codeclimateOptions: CodeclimateOptions) -> [File] {
-        return codeclimateOptions.include_paths.flatMap { path -> [File] in
-            if let root = rootPath {
-                return lintableFiles(inPath: root.bridge().appendingPathComponent(path))
+    fileprivate func getUniqueFiles(codeclimateOptions: CodeclimateOptions) -> Set<File> {
+        let processLintable = { (path: String) -> [File] in
+            if let root = self.rootPath {
+                return self.lintableFiles(inPath: root.bridge().appendingPathComponent(path))
             }
             else {
-                return lintableFiles(inPath: path)
+                return self.lintableFiles(inPath: path)
             }
         }
+        let lintable:[File] = codeclimateOptions.include_paths.flatMap(processLintable)
+        let excludedPaths:[File] = (codeclimateOptions.exclude_paths ?? []).flatMap(processLintable)
+        return Set<File>(lintable.lazy.filter {
+            return $0.path!.bridge().isSwiftFile() && !excludedPaths.contains($0)
+        })
     }
 
     func visitLintableFiles(codeclimateOptions: CodeclimateOptions, parallel: Bool = false,
-                            visitorBlock: @escaping (Linter) -> Void) -> [File] {
-        let files = getFiles(codeclimateOptions: codeclimateOptions).filter {
-            return $0.path?.hasSuffix(".swift") ?? false
+                            visitorBlock: @escaping (Linter) -> Void) -> Void {
+        let uniqueFiles = getUniqueFiles(codeclimateOptions: codeclimateOptions)
+        if (uniqueFiles.isEmpty) {
+            return
         }
-        if (files.isEmpty) {
-            return []
-        }
-        let filesPerConfiguration: [Configuration: [File]] = Dictionary(grouping: files, by: configuration(for:))
+
+        let filesPerConfiguration: [Configuration: [File]] = Dictionary(grouping: uniqueFiles, by: configuration(for:))
         let fileCount = filesPerConfiguration.reduce(0) { $0 + $1.value.count }
         let visit = { (file: File, config: Configuration) -> Void in
             visitorBlock(Linter(file: file, configuration: config))
@@ -53,7 +70,6 @@ extension Configuration {
         } else {
             filesAndConfigurations.forEach(visit)
         }
-        return files
     }
 }
 
