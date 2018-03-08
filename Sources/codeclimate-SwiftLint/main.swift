@@ -8,6 +8,18 @@ import SourceKittenFramework
 
 var debugMode = false
 
+private let outputQueue: DispatchQueue = {
+    let queue = DispatchQueue(label: "com.codeclimate.swiftlint.outputQueue")
+
+    #if !os(Linux)
+        atexit_b {
+            queue.sync(flags: .barrier) {}
+        }
+    #endif
+
+    return queue
+}()
+
 struct CodeclimateOptions : Decodable {
     let include_paths: [String]
     let exclude_paths: [String]?
@@ -75,7 +87,7 @@ extension Configuration {
     }
 }
 
-private func violationToString(violation: StyleViolation) -> String {
+private func violationToDict(violation: StyleViolation) -> [String: Any] {
     let category: String = {
         switch violation.ruleDescription.kind {
         case .idiomatic:
@@ -108,7 +120,7 @@ private func violationToString(violation: StyleViolation) -> String {
         ]
     ]
 
-    let d: [String: Any] = [
+    return [
         "type": "issue",
         "check_name": violation.ruleDescription.name,
         "description": violation.reason,
@@ -116,7 +128,6 @@ private func violationToString(violation: StyleViolation) -> String {
         "location": location,
         "severity": severity,
     ]
-    return toJSON(d)
 }
 
 // Exit fast when just version is required
@@ -144,11 +155,16 @@ DispatchQueue.global().async {
         let codeclimateOptions = try JSONDecoder().decode(CodeclimateOptions.self, from: configFileData)
         let configuration = Configuration(codeclimateOptions: codeclimateOptions, rootPath: rootPath ?? "/code")
         if !debugMode {
-            configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: false) { linter in
+            configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: true) { linter in
                 for v: StyleViolation in linter.styleViolations {
-                    var jsonString = violationToString(violation: v)
-                    jsonString.append("\n\0")
-                    queuedPrint(jsonString)
+                    let jsonDict = violationToDict(violation: v)
+                    outputQueue.async {
+                        let jsonData = try! JSONSerialization.data(withJSONObject: jsonDict)
+                        jsonData.withUnsafeBytes { p -> Void in
+                            fwrite(p, jsonData.count, 1, stdout)
+                        }
+                        fputc(0, stdout)
+                    }
                 }
                 linter.file.invalidateCache()
             }
