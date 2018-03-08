@@ -46,23 +46,16 @@ extension Configuration {
 
     func visitLintableFiles(codeclimateOptions: CodeclimateOptions, parallel: Bool = false,
                             visitorBlock: @escaping (Linter) -> Void) -> Void {
-        let uniqueFiles = getUniqueFiles(codeclimateOptions: codeclimateOptions)
-        if (uniqueFiles.isEmpty) {
+        let files = getUniqueFiles(codeclimateOptions: codeclimateOptions)
+        if files.isEmpty {
             return
         }
-
-        let filesPerConfiguration: [Configuration: [File]] = Dictionary(grouping: uniqueFiles, by: configuration(for:))
-        let fileCount = filesPerConfiguration.reduce(0) { $0 + $1.value.count }
+        var filesAndConfigurations: [(File, Configuration)] = files.map { ($0, configuration(for:$0)) }
         let visit = { (file: File, config: Configuration) -> Void in
             visitorBlock(Linter(file: file, configuration: config))
         }
-        var filesAndConfigurations = [(File, Configuration)]()
-        filesAndConfigurations.reserveCapacity(fileCount)
-        for (config, files) in filesPerConfiguration {
-            filesAndConfigurations += files.map { ($0, config) }
-        }
         if parallel {
-            DispatchQueue.concurrentPerform(iterations: fileCount) { index in
+            DispatchQueue.concurrentPerform(iterations: filesAndConfigurations.count) { index in
                 let (file, config) = filesAndConfigurations[index]
                 visit(file, config)
             }
