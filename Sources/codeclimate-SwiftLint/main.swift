@@ -83,11 +83,11 @@ DispatchQueue.global().async {
         if !debugMode {
             let outputQueue = DispatchQueue(label: "com.codeclimate.swiftlint.outputQueue")
             configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: true) { linter in
-                let violations = linter.styleViolations.map(violationToDict)
+                let violations = linter.styleViolations
                 linter.file.invalidateCache()
                 outputQueue.async {
                     for v in violations {
-                        let jsonData = try! JSONSerialization.data(withJSONObject: v)
+                        let jsonData = try! JSONSerialization.data(withJSONObject: violationToDict(violation: v))
                         jsonData.withUnsafeBytes { p -> Void in
                             fwrite(p, jsonData.count, 1, stdout)
                         }
