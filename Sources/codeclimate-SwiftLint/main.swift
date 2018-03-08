@@ -156,17 +156,17 @@ DispatchQueue.global().async {
         let configuration = Configuration(codeclimateOptions: codeclimateOptions, rootPath: rootPath ?? "/code")
         if !debugMode {
             configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: true) { linter in
-                for v: StyleViolation in linter.styleViolations {
-                    let jsonDict = violationToDict(violation: v)
-                    outputQueue.async {
-                        let jsonData = try! JSONSerialization.data(withJSONObject: jsonDict)
+                let violations = linter.styleViolations.map(violationToDict)
+                linter.file.invalidateCache()
+                outputQueue.async {
+                    for v in violations {
+                        let jsonData = try! JSONSerialization.data(withJSONObject: v)
                         jsonData.withUnsafeBytes { p -> Void in
                             fwrite(p, jsonData.count, 1, stdout)
                         }
                         fputc(0, stdout)
                     }
                 }
-                linter.file.invalidateCache()
             }
         }
         else {
