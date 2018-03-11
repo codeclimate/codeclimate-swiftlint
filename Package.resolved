@@ -47,15 +47,6 @@
         }
       },
       {
-        "package": "SWXMLHash",
-        "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
-        "state": {
-          "branch": null,
-          "revision": "1b8d10f33b92be746c74346f4e713216cb1cb480",
-          "version": "4.5.0"
-        }
-      },
-      {
         "package": "SourceKit",
         "repositoryURL": "https://github.com/norio-nomura/SourceKit.git",
         "state": {
@@ -75,11 +66,11 @@
       },
       {
         "package": "SwiftLint",
-        "repositoryURL": "https://github.com/realm/SwiftLint.git",
+        "repositoryURL": "https://github.com/notorca/SwiftLint.git",
         "state": {
-          "branch": null,
-          "revision": "c875bed8135517288fd89c072c0a316b4cdedb74",
-          "version": "0.25.0"
+          "branch": "0.25.0_fixed",
+          "revision": "93c3df23c97642fe677fd4cccce4ec832c26881e",
+          "version": null
         }
       },
       {
@@ -89,6 +80,15 @@
           "branch": null,
           "revision": "89728970c0a244c43f29c4155a1b1dc20b3c4633",
           "version": "0.8.0"
+        }
+      },
+      {
+        "package": "SWXMLHash",
+        "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
+        "state": {
+          "branch": null,
+          "revision": "17d992beb3aaeda403fd35f8d5e70ab1a8124f35",
+          "version": "4.6.0"
         }
       },
       {
