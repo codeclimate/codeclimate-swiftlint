@@ -10,10 +10,9 @@
   plugins:
     swiftlint:
       enabled: true
-      channel: beta
   ```
 3. You're ready to analyze! Browse into your project's folder and run `codeclimate analyze`.
 
 ### SwiftLint Config
 
-`codeclimate-swiftlint` works with your existing `.swiftlint.yml` file. 
+`codeclimate-swiftlint` works with your existing `.swiftlint.yml` file.
