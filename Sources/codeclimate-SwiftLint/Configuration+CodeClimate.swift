@@ -31,10 +31,10 @@ extension Configuration {
     fileprivate func getUniqueFiles(codeclimateOptions: CodeclimateOptions) -> Set<File> {
         let processLintable = { (path: String) -> [File] in
             if let root = self.rootPath {
-                return self.lintableFiles(inPath: root.bridge().appendingPathComponent(path))
+                return self.lintableFiles(inPath: root.bridge().appendingPathComponent(path), forceExclude: false)
             }
             else {
-                return self.lintableFiles(inPath: path)
+                return self.lintableFiles(inPath: path, forceExclude: false)
             }
         }
         let lintable:[File] = codeclimateOptions.include_paths.flatMap(processLintable)
