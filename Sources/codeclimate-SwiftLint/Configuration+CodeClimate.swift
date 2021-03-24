@@ -29,12 +29,6 @@ extension Configuration {
 
     fileprivate func getUniqueFiles(codeclimateOptions: CodeclimateOptions) -> Set<SwiftLintFile> {
         let processLintable = { (path: String) -> [SwiftLintFile] in
-            //if let root = self.rootPath {
-            //    return self.lintableFiles(inPath: root.bridge().appendingPathComponent(path), forceExclude: false)
-            //}
-            //else {
-            //    return self.lintableFiles(inPath: path, forceExclude: false)
-            //}
             return self.lintableFiles(inPath: path, forceExclude: false)
         }
         let lintable:[SwiftLintFile] = codeclimateOptions.include_paths.flatMap(processLintable)
