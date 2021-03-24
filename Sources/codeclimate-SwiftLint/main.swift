@@ -15,18 +15,22 @@ struct CodeclimateOptions : Decodable {
 
 private func violationToDict(violation: StyleViolation) -> [String: Any] {
     let category: String = {
-        switch violation.ruleDescription.kind {
-        case .idiomatic:
+        if let rule = primaryRuleList.list[violation.ruleIdentifier] {
+            switch rule.description.kind {
+            case .idiomatic:
             return "Clarity"
-        case .lint:
-            return "Bug Risk"
-        case .metrics:
-            return "Complexity"
-        case .performance:
-            return "Performance"
-        case .style:
-            return "Style"
+            case .lint:
+                return "Bug Risk"
+            case .metrics:
+                return "Complexity"
+            case .performance:
+                return "Performance"
+            case .style:
+                return "Style"
+            }
         }
+
+        return ""
     }()
 
     let severity: String = {
@@ -48,7 +52,7 @@ private func violationToDict(violation: StyleViolation) -> [String: Any] {
 
     return [
         "type": "issue",
-        "check_name": violation.ruleDescription.name,
+        "check_name": violation.ruleDescription,
         "description": violation.reason,
         "categories": [category],
         "location": location,
@@ -78,12 +82,18 @@ DispatchQueue.global().async {
         }
 
         let configFileData = try Data(contentsOf:configUrl)
+        let fileURL = URL(fileURLWithPath:"/code/.swiftlint.yml")
+        var configurationFiles: [String] = []
+        if let _ = try? fileURL.checkResourceIsReachable() {
+            configurationFiles = ["/code/.swiftlint.yml"]
+        }
         let codeclimateOptions = try JSONDecoder().decode(CodeclimateOptions.self, from: configFileData)
-        let configuration = Configuration(codeclimateOptions: codeclimateOptions, rootPath: rootPath ?? "/code")
+        let configuration = Configuration(codeclimateOptions: codeclimateOptions, configurationFiles: configurationFiles)
+        let storage = RuleStorage()
         if !debugMode {
             let outputQueue = DispatchQueue(label: "com.codeclimate.swiftlint.outputQueue")
             configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: true) { linter in
-                let violations = linter.styleViolations
+                let violations = linter.collect(into: storage).styleViolations(using: storage)
                 linter.file.invalidateCache()
                 outputQueue.async {
                     for v in violations {
@@ -100,11 +110,12 @@ DispatchQueue.global().async {
         else {
             var violationsCount = 0
             let violationsCountLock = NSLock()
+            let storage = RuleStorage()
             configuration.visitLintableFiles(codeclimateOptions: codeclimateOptions, parallel: false) { linter in
                 violationsCountLock.lock()
-                violationsCount += linter.styleViolations.count
+                violationsCount += linter.collect(into: storage).styleViolations(using: storage).count
                 violationsCountLock.unlock()
-                queuedPrint(XcodeReporter.generateReport(linter.styleViolations))
+                queuedPrint(XcodeReporter.generateReport(linter.collect(into: storage).styleViolations(using: storage)))
                 linter.file.invalidateCache()
             }
             queuedPrintError("Done linting! Found \(violationsCount) violations")

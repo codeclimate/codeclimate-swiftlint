@@ -2,48 +2,12 @@
   "object": {
     "pins": [
       {
-        "package": "Commandant",
-        "repositoryURL": "https://github.com/Carthage/Commandant.git",
-        "state": {
-          "branch": null,
-          "revision": "2cd0210f897fe46c6ce42f52ccfa72b3bbb621a0",
-          "version": "0.16.0"
-        }
-      },
-      {
         "package": "CryptoSwift",
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "3a2acbb32ab68215ee1596ee6004da8e90c3721b",
-          "version": "1.0.0"
-        }
-      },
-      {
-        "package": "Nimble",
-        "repositoryURL": "https://github.com/Quick/Nimble.git",
-        "state": {
-          "branch": null,
-          "revision": "43304bf2b1579fd555f2fdd51742771c1e4f2b98",
-          "version": "8.0.1"
-        }
-      },
-      {
-        "package": "Quick",
-        "repositoryURL": "https://github.com/Quick/Quick.git",
-        "state": {
-          "branch": null,
-          "revision": "94df9b449508344667e5afc7e80f8bcbff1e4c37",
-          "version": "2.1.0"
-        }
-      },
-      {
-        "package": "Result",
-        "repositoryURL": "https://github.com/antitypical/Result.git",
-        "state": {
-          "branch": null,
-          "revision": "2ca499ba456795616fbc471561ff1d963e6ae160",
-          "version": "4.1.0"
+          "revision": "5669f222e46c8134fb1f399c745fa6882b43532e",
+          "version": "1.3.8"
         }
       },
       {
@@ -51,8 +15,17 @@
         "repositoryURL": "https://github.com/jpsim/SourceKitten.git",
         "state": {
           "branch": null,
-          "revision": "fd9091759201473aa234c22322a3939615aef59a",
-          "version": "0.23.2"
+          "revision": "7f4be006fe73211b0fd9666c73dc2f2303ffa756",
+          "version": "0.31.0"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
+        "state": {
+          "branch": null,
+          "revision": "9564d61b08a5335ae0a36f789a7d71493eacadfc",
+          "version": "0.3.2"
         }
       },
       {
@@ -60,8 +33,8 @@
         "repositoryURL": "https://github.com/realm/SwiftLint.git",
         "state": {
           "branch": null,
-          "revision": "740e398f9115f1f16048ea6979060f4e83a36b1c",
-          "version": "0.33.0"
+          "revision": "da2ca76953d6465309978053925c1849328e37f6",
+          "version": "0.43.0"
         }
       },
       {
@@ -78,8 +51,8 @@
         "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
         "state": {
           "branch": null,
-          "revision": "f43166a8e18fdd0857f29e303b1bb79a5428bca0",
-          "version": "4.9.0"
+          "revision": "9183170d20857753d4f331b0ca63f73c60764bf3",
+          "version": "5.0.2"
         }
       },
       {
@@ -87,8 +60,8 @@
         "repositoryURL": "https://github.com/jpsim/Yams.git",
         "state": {
           "branch": null,
-          "revision": "c947a306d2e80ecb2c0859047b35c73b8e1ca27f",
-          "version": "2.0.0"
+          "revision": "9003d51672e516cc59297b7e96bff1dfdedcb4ea",
+          "version": "4.0.4"
         }
       }
     ]
