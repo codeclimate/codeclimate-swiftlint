@@ -10,13 +10,13 @@ import Foundation
 import SwiftLintFramework
 import SourceKittenFramework
 
-extension SwiftLintFile : Equatable {
+extension SwiftLintFile {
     public static func == (lhs: SwiftLintFile, rhs: SwiftLintFile) -> Bool {
         return lhs.path == rhs.path
     }
 }
 
-extension SwiftLintFile : Hashable {
+extension SwiftLintFile {
     public var hashValue: Int {
         return self.path?.hashValue ?? 0
     }
@@ -44,7 +44,7 @@ extension Configuration {
         if files.isEmpty {
             return
         }
-        var filesAndConfigurations: [(SwiftLintFile, Configuration)] = files.map { ($0, configuration(for:$0)) }
+        let filesAndConfigurations: [(SwiftLintFile, Configuration)] = files.map { ($0, configuration(for:$0)) }
         let visit = { (file: SwiftLintFile, config: Configuration) -> Void in
             visitorBlock(Linter(file: file, configuration: config))
         }

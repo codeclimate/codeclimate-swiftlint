@@ -99,7 +99,11 @@ DispatchQueue.global().async {
                     for v in violations {
                         let jsonData = try! JSONSerialization.data(withJSONObject: violationToDict(violation: v))
                         jsonData.withUnsafeBytes { p -> Void in
-                            fwrite(p, jsonData.count, 1, stdout)
+                            fwrite(
+                                p.load(as: UnsafeRawPointer.self),
+                                jsonData.count, 1,
+                                stdout
+                            )
                         }
                         fputc(0, stdout)
                     }

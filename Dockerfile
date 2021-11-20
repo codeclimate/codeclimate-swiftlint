@@ -1,4 +1,4 @@
-FROM norionomura/swift:533 as build
+FROM norionomura/swift:54 as build
 
 LABEL maintainer="Code Climate <hello@codeclimate.com>"
 
