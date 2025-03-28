@@ -1,18 +1,31 @@
-# Code Climate SwiftLint Engine
+# Try Qlty today, the newest edition of Code Climate Quality.
+#### This repository is deprecated and archived.
 
-`codeclimate-swiftlint` is a Code Climate engine that wraps the [SwiftLint](https://github.com/realm/SwiftLint) static analysis tool. You can run it on your command line using the Code Climate CLI, or on our hosted analysis platform.
+This is a repository for a Code Climate Quality plugin which is packaged as a Docker image.
 
-### Installation
+Code Climate Quality is being replaced with the new [Qlty](qlty.sh) code quality platform. Qlty uses a new plugin system which does not require packaging plugins as Docker images.
 
-1. If you haven't already, [install the Code Climate CLI](https://github.com/codeclimate/codeclimate).
-2. Enable the engine through the beta channel in your .codeclimate.yml file:
-  ```yaml
-  plugins:
-    swiftlint:
-      enabled: true
-  ```
-3. You're ready to analyze! Browse into your project's folder and run `codeclimate analyze`.
+As a result, this repository is no longer maintained and has been archived.
 
-### SwiftLint Config
+## Advantages of Qlty plugins
+The new Qlty plugins system provides key advantages over the older, Docker-based plugin system:
 
-`codeclimate-swiftlint` works with your existing `.swiftlint.yml` file.
+- Linting runs much faster without the overhead of virtualization
+- New versions of linters are available immediately without needing to wait for a re-packaged release
+- Plugins can be run with any arbitrary extensions (like extra rules and configs) without requiring pre-packaging
+- Eliminates security issues associated with exposing a Docker daemon
+
+## Try out Qlty today free
+
+[Qlty CLI](https://docs.qlty.sh/cli/quickstart) is the fastest linter and auto-formatter for polyglot teams. It is completely free and available for Mac, Windows, and Linux.
+
+  - Install Qlty CLI:
+`
+curl https://qlty.sh | sh # Mac or Linux
+`
+or ` <windows install line> `
+
+[Qlty Cloud](https://docs.qlty.sh/cloud/quickstart) is a full code health platform for integrating code quality into development team workflows. It is free for unlimited private contributors.
+  - [Try Qlty Cloud today](https://docs.qlty.sh/cloud/quickstart)
+
+**Note**: For existing customers of Quality, please see our [Migration Guide](https://docs.qlty.sh/migration/guide) for more information and resources.
